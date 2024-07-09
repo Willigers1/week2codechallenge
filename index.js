@@ -1,26 +1,48 @@
-const list = document.querySelector("ol");
-const input = document.querySelector("input");
-const button = document.querySelector("button");
+document.addEventListener("DOMContentLoaded", function () {
+  const addItemButton = document.getElementById("addItem");
+  const input = document.getElementById("item");
+  const list = document.querySelector("ol");
 
-button.onclick = function () {
-  let newItem = input.value;
-  input.value = "";
+  // Function to add a new item to the shopping list
+  addItemButton.addEventListener("click", function () {
+    const newItem = input.value.trim();
+    if (newItem !== "") {
+      const listItem = document.createElement("li");
+      listItem.innerHTML = `
+        <span>${newItem}</span>
+        <div class="shopping-item-controls">
+          <button class="delete-btn">Delete</button>
+          <button class="purchased-btn">Purchased</button>
+        </div>
+      `;
+      list.appendChild(listItem);
+      input.value = "";
+    }
+  });
 
-  let itemList = document.createElement("li");
-  let itemText = document.createElement("span");
-  let itemBtn = document.createElement("button");
+  // Event delegation for marking an item as purchased
+  list.addEventListener("click", function (event) {
+    if (event.target.classList.contains("purchased-btn")) {
+      const item = event.target.closest("li");
+      item.querySelector("span").classList.toggle("purchased");
+      event.target.textContent =
+        event.target.textContent === "Purchased" ? "Undo" : "Purchased";
+    }
+  });
 
-  itemList.appendChild(itemText);
-  itemText.textContent = newItem;
+  // Event delegation for deleting an item
+  list.addEventListener("click", function (event) {
+    if (event.target.classList.contains("delete-btn")) {
+      const item = event.target.closest("li");
+      list.removeChild(item);
+    }
+  });
 
-  itemList.appendChild(itemBtn);
-  itemBtn.textContent = "Delete";
-
-  list.appendChild(itemList);
-
-  itemBtn.onclick = function () {
-    list.removeChild(itemList);
-  };
-
-  input.focus();
-};
+  // Function to clear the entire shopping list
+  const clearListButton = document.createElement("button");
+  clearListButton.textContent = "Clear List";
+  clearListButton.addEventListener("click", function () {
+    list.innerHTML = "";
+  });
+  document.body.appendChild(clearListButton);
+});
